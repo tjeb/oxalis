@@ -145,11 +145,20 @@ public enum KeystoreManager {
      * Loads the PEPPOL trust store from disk. The PEPPOL trustore holds the PEPPOL intermediate and root certificates.
      */
     KeyStore loadPeppolTruststore() {
-
-        PeppolTrustStore store = new PeppolTrustStore();
-        PkiVersion pkiVersion = GlobalConfiguration.getInstance().getPkiVersion();
+        KeyStore keyStore;
         OperationalMode modeOfOperation = GlobalConfiguration.getInstance().getModeOfOperation();
-        KeyStore keyStore = store.loadTrustStoreFor(pkiVersion, modeOfOperation);
+        log.debug("Operational mode: " + modeOfOperation.name());
+	if (!modeOfOperation.equals(OperationalMode.PRIVATE)) {
+            log.debug("Loading built-in truststore");
+            PeppolTrustStore store = new PeppolTrustStore();
+            PkiVersion pkiVersion = GlobalConfiguration.getInstance().getPkiVersion();
+            keyStore = store.loadTrustStoreFor(pkiVersion, modeOfOperation);
+        } else {
+            String keyStoreFileName = globalConfiguration.getTrustStoreFileName();
+            String keyStorePassword = globalConfiguration.getTrustStorePassword();
+            log.debug("Loading private truststore from " + keyStoreFileName);
+            keyStore = KeyStoreUtil.loadJksKeystore(keyStoreFileName, keyStorePassword);
+        }
 
         return keyStore;
     }

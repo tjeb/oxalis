@@ -36,14 +36,10 @@ public class KeyStoreUtil {
 
         File keyStoreFile = new File(location);
 
-        return loadJksKeystore(keyStoreFile, password);
-    }
-
-    public static KeyStore loadJksKeystore(File keyStoreFile, String password) {
         try {
             FileInputStream inputStream = new FileInputStream(keyStoreFile);
 
-            return loadJksKeystoreAndCloseStream(inputStream, password);
+            return loadJksKeystoreAndCloseStream(inputStream, password, location);
 
         } catch (FileNotFoundException e) {
             throw new RuntimeException("Failed to open keystore " + keyStoreFile.getAbsolutePath(), e);
@@ -58,7 +54,7 @@ public class KeyStoreUtil {
      * @param password
      * @return
      */
-    public static KeyStore loadJksKeystoreAndCloseStream(InputStream inputStream, String password) {
+    public static KeyStore loadJksKeystoreAndCloseStream(InputStream inputStream, String password, String resourceName) {
         try {
 
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -67,7 +63,7 @@ public class KeyStoreUtil {
 
         } catch (Exception e) {
 
-            throw new RuntimeException("Failed to open keystore", e);
+            throw new RuntimeException("Failed to open keystore at " + resourceName, e);
 
         } finally {
             try {
@@ -84,7 +80,7 @@ public class KeyStoreUtil {
             throw new IllegalStateException("Unable to load trust store resource " + trustStoreResourceName + " from class path");
         }
 
-        return loadJksKeystoreAndCloseStream(inputStream, password);
+        return loadJksKeystoreAndCloseStream(inputStream, password, trustStoreResourceName);
     }
 
     public static X509Certificate getFirstCertificate(KeyStore keyStore) {
@@ -140,6 +136,7 @@ public class KeyStoreUtil {
 
         List<KeyStore> loadedKeystores = new ArrayList<KeyStore>();
         for (String resourceName : resourceNames) {
+            log.debug("Load trust store {}", resourceName);
             KeyStore keyStore = KeyStoreUtil.loadTrustStore(resourceName, password);
             loadedKeystores.add(keyStore);
         }

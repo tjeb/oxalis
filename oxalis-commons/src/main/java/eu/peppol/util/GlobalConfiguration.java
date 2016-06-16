@@ -79,6 +79,7 @@ public enum GlobalConfiguration {
     private void createPropertiesWithReasonableDefaults() {
         properties = new Properties(PropertyDef.getDefaultPropertyValues());
         properties.setProperty(KEYSTORE_PATH.getPropertyName(), oxalisHomeDirectory + "/oxalis-keystore.jks");
+        properties.setProperty(TRUSTSTORE_PATH.getPropertyName(), oxalisHomeDirectory + "/oxalis-truststore.jks");
     }
 
     synchronized void verifyProperties() {
@@ -178,6 +179,10 @@ public enum GlobalConfiguration {
         return KEYSTORE_PASSWORD.getValue(properties);
     }
 
+    public String getTrustStoreFileName() {
+        return TRUSTSTORE_PATH.getValue(properties);
+    }
+
     public String getTrustStorePassword() {
         return TRUSTSTORE_PASSWORD.getValue(properties);
     }
@@ -245,7 +250,16 @@ public enum GlobalConfiguration {
          */
         KEYSTORE_PASSWORD("oxalis.keystore.password", true, "peppol", false),
 
+        /**
+         * Location of truststore if it is not one of the defaults (if operationalmode is PRIVATE)
+         */
+        TRUSTSTORE_PATH("oxalis.truststore", false, "", false),
+
+        /**
+         * The password of the trust store
+         */
         TRUSTSTORE_PASSWORD("oxalis.truststore.password", false, "peppol", false),
+
 
         /**
          * Where to store inbound messages
@@ -325,7 +339,7 @@ public enum GlobalConfiguration {
         PKI_VERSION("oxalis.pki.version", true, PkiVersion.V2.name()),
 
         /**
-         * Mode of operation, i.e. TEST or PRODUCTION.
+         * Mode of operation, i.e. TEST, PRODUCTION, or PRIVATE.
          * For PKI version 1, TEST is the only mode available.
          */
         OPERATION_MODE("oxalis.operation.mode", true, OperationalMode.TEST.name()),
