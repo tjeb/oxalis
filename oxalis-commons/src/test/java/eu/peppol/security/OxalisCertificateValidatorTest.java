@@ -62,7 +62,7 @@ public class OxalisCertificateValidatorTest {
 
     private X509Certificate loadOurCertificate(String fileName, String password) {
         File keyStoreFile = new File(oxalisHomeDir, fileName);
-        KeyStore v1Keystore = KeyStoreUtil.loadJksKeystore(keyStoreFile, password);
+        KeyStore v1Keystore = KeyStoreUtil.loadJksKeystore(fileName, password);
         return KeyStoreUtil.getFirstCertificate(v1Keystore);
     }
 

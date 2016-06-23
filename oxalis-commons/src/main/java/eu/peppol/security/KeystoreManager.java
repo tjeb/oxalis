@@ -148,7 +148,7 @@ public enum KeystoreManager {
         KeyStore keyStore;
         OperationalMode modeOfOperation = GlobalConfiguration.getInstance().getModeOfOperation();
         log.debug("Operational mode: " + modeOfOperation.name());
-	if (!modeOfOperation.equals(OperationalMode.PRIVATE)) {
+        if (!modeOfOperation.equals(OperationalMode.PRIVATE)) {
             log.debug("Loading built-in truststore");
             PeppolTrustStore store = new PeppolTrustStore();
             PkiVersion pkiVersion = GlobalConfiguration.getInstance().getPkiVersion();

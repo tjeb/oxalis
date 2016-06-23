@@ -29,7 +29,7 @@ public enum GlobalState {
     private void initialize() {
         if (hasBeenInitialized) return;
         // determine if transmissions builder should be overridable
-        transmissionBuilderOverride = OperationalMode.TEST.equals(GlobalConfiguration.getInstance().getModeOfOperation());
+        transmissionBuilderOverride = !OperationalMode.PRODUCTION.equals(GlobalConfiguration.getInstance().getModeOfOperation());
         if ("trUe".equalsIgnoreCase(System.getenv("oxalis.transmissionbuilder.override"))) {
             log.warn("Running with transmissionBuilderOverride enabled since ENVIRONMENT variable oxalis.transmissionbuilder.override=TRUE");
             transmissionBuilderOverride = true;

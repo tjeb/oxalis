@@ -214,7 +214,7 @@ class As2MessageSender implements MessageSender {
                 // Verify if the certificate used by the receiving Access Point in
                 // the response message does not match its certificate published by the SMP
                 if (peppolEndpointData.getCommonName() == null || !CommonName.valueOf(cert.getSubjectX500Principal()).equals(peppolEndpointData.getCommonName())) {
-                    throw new CertificateException("Common name in certificate from SMP does not match common name in AP certificate");
+                    throw new CertificateException("Common name in certificate from SMP (" + CommonName.valueOf(cert.getSubjectX500Principal()) + ") does not match common name in AP certificate (" + peppolEndpointData.getCommonName() + ")");
                 }
 
                 log.debug("MDN signature was verfied for : " + cert.getSubjectDN().toString());

@@ -115,6 +115,10 @@ public class SmpLookupManagerImpl implements SmpLookupManager {
                 log.warn("Mode of operation is TEST");
                 smlHost = SmlHost.TEST_SML;
                 break;
+            case PRIVATE:
+                log.warn("Mode of operation is PRIVATE");
+                smlHost = SmlHost.TEST_SML;
+                break;
             default:
                 smlHost = SmlHost.PRODUCTION_SML;
                 break;
@@ -443,6 +447,7 @@ public class SmpLookupManagerImpl implements SmpLookupManager {
         } catch (Exception e) {
             String pid = (participant == null) ? "participant missing" : "for participant " + participant.toString();
             String did = (documentTypeIdentifier == null) ? "document type missing" : "document type " + documentTypeIdentifier.toString();
+            log.error("SMP lookup error: ", e);
             throw new RuntimeException("Problem with SMP lookup " + pid + " and " + did, e);
         }
     }
