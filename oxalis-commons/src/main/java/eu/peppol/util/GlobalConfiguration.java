@@ -235,6 +235,26 @@ public enum GlobalConfiguration {
         return JDBC_VALIDATION_QUERY.getValue(properties);
     }
 
+    public void setReplyToEndpoint(String endpoint) {
+        properties.setProperty(REPLY_TO_ENDPOINT.getPropertyName(), endpoint);
+    }
+    
+    public String getReplyToEndpoint() {
+        return REPLY_TO_ENDPOINT.getValue(properties);
+    }
+
+    public void setReplyToIdentifier(String identifier) {
+        properties.setProperty(REPLY_TO_IDENTIFIER.getPropertyName(), identifier);
+    }
+
+    public String getReplyToIdentifier() {
+        return REPLY_TO_IDENTIFIER.getValue(properties);
+    }
+
+    public boolean getReplyToSender() {
+        return Boolean.valueOf(REPLY_TO_SENDER.getValue(properties));
+    }
+
     /**
      * Property definitions, which are declared separately from the actual instances of
      * the properties.
@@ -367,7 +387,16 @@ public enum GlobalConfiguration {
          *
          * Example: oxalis.sml.hostname=sml.peppolcentral.org
          */
-        SML_HOSTNAME("oxalis.sml.hostname", false, "", false);
+        SML_HOSTNAME("oxalis.sml.hostname", false, "", false),
+
+        /**
+         * Set the reply-to-endpoint header in outgoing messages
+         */
+        REPLY_TO_ENDPOINT("oxalis.reply-to.endpoint", false, "", false),
+
+        REPLY_TO_IDENTIFIER("oxalis.reply-to.identifier", false, "", false),
+
+        REPLY_TO_SENDER("oxalis.reply-to.sender", false, "false", false);
 
         /**
          * External name of property as it appears in your .properties file, i.e. with the dot notation,

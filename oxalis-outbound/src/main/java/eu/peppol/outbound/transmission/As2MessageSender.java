@@ -80,13 +80,24 @@ class As2MessageSender implements MessageSender {
                 transmissionRequest.getPeppolStandardBusinessHeader().getSenderId(),
                 transmissionRequest.getPeppolStandardBusinessHeader().getDocumentTypeIdentifier(),
                 endpointAddress,
-                as2SystemIdentifierOfSender);
+                as2SystemIdentifierOfSender,
+                transmissionRequest.getReplyToEndpoint(),
+                transmissionRequest.getReplyToIdentifier(),
+                transmissionRequest.getReplyToSender());
 
         return new As2TransmissionResponse(transmissionId, transmissionRequest.getPeppolStandardBusinessHeader(), endpointAddress.getUrl(), endpointAddress.getBusDoxProtocol(), endpointAddress.getCommonName());
     }
 
-
-    TransmissionId send(InputStream inputStream, ParticipantId recipient, ParticipantId sender, PeppolDocumentTypeId peppolDocumentTypeId, SmpLookupManager.PeppolEndpointData peppolEndpointData, PeppolAs2SystemIdentifier as2SystemIdentifierOfSender) {
+    TransmissionId send(InputStream inputStream,
+                        ParticipantId recipient,
+                        ParticipantId sender,
+                        PeppolDocumentTypeId peppolDocumentTypeId,
+                        SmpLookupManager.PeppolEndpointData peppolEndpointData,
+                        PeppolAs2SystemIdentifier as2SystemIdentifierOfSender,
+                        SmpLookupManager.PeppolEndpointData replyToEndpoint,
+                        ParticipantId replyToIdentifier,
+                        boolean replyToSender
+                        ) {
 
         if (peppolEndpointData.getCommonName() == null) {
             throw new IllegalArgumentException("No common name in EndPoint object. " + peppolEndpointData);
@@ -128,6 +139,19 @@ class As2MessageSender implements MessageSender {
         httpPost.addHeader(As2Header.DISPOSITION_NOTIFICATION_OPTIONS.getHttpHeaderName(), As2DispositionNotificationOptions.getDefault().toString());
         httpPost.addHeader(As2Header.AS2_VERSION.getHttpHeaderName(), As2Header.VERSION);
         httpPost.addHeader(As2Header.SUBJECT.getHttpHeaderName(), "AS2 message from OXALIS");
+
+        // Add reply-to-headers if set
+        if (replyToSender) {
+            // if endpoint is set, use that
+            if (replyToEndpoint != null) {
+                httpPost.addHeader(As2Header.REPLY_TO_ENDPOINT.getHttpHeaderName(), replyToEndpoint.getUrl().toString());
+            } else if (replyToIdentifier != null) {
+                httpPost.addHeader(As2Header.REPLY_TO_IDENTIFIER.getHttpHeaderName(), replyToIdentifier.toString());
+            } else {
+                // Use our own endpoint address
+                httpPost.addHeader(As2Header.REPLY_TO_IDENTIFIER.getHttpHeaderName(), as2SystemIdentifierOfSender.toString());
+            }
+        }
 
         TransmissionId transmissionId = new TransmissionId();
         httpPost.addHeader(As2Header.MESSAGE_ID.getHttpHeaderName(), transmissionId.toString());

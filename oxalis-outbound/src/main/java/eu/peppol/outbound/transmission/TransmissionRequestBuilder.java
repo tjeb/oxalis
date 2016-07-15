@@ -64,11 +64,19 @@ public class TransmissionRequestBuilder {
      */
     private PeppolStandardBusinessHeader effectiveStandardBusinessHeader;
 
+    private SmpLookupManager.PeppolEndpointData replyToEndpoint;
+    private ParticipantId replyToIdentifier;
+    private boolean replyToSender;
+
     @Inject
     public TransmissionRequestBuilder(Sbdh2PeppolHeaderParser sbdh2PeppolHeaderParser, NoSbdhParser noSbdhParser, SmpLookupManager smpLookupManager) {
         this.sbdh2PeppolHeaderParser = sbdh2PeppolHeaderParser;
         this.noSbdhParser = noSbdhParser;
         this.smpLookupManager = smpLookupManager;
+
+        this.replyToEndpoint = null;
+        this.replyToIdentifier = null;
+        this.replyToSender = false;
     }
 
     /**
@@ -123,6 +131,21 @@ public class TransmissionRequestBuilder {
 
     public TransmissionRequestBuilder trace(boolean traceEnabled) {
         this.traceEnabled = traceEnabled;
+        return this;
+    }
+
+    public TransmissionRequestBuilder replyToEndpoint(SmpLookupManager.PeppolEndpointData endpoint) {
+        this.replyToEndpoint = endpoint;
+        return this;
+    }
+
+    public TransmissionRequestBuilder replyToIdentifier(ParticipantId identifier) {
+        this.replyToIdentifier = identifier;
+        return this;
+    }
+
+    public TransmissionRequestBuilder replyToSender() {
+        this.replyToSender = true;
         return this;
     }
 
@@ -290,6 +313,18 @@ public class TransmissionRequestBuilder {
     private byte[] wrapPayLoadWithSBDH(ByteArrayInputStream byteArrayInputStream, PeppolStandardBusinessHeader effectiveStandardBusinessHeader) {
         SbdhWrapper sbdhWrapper = new SbdhWrapper();
         return sbdhWrapper.wrap(byteArrayInputStream, effectiveStandardBusinessHeader);
+    }
+
+    public SmpLookupManager.PeppolEndpointData getReplyToEndpoint() {
+        return replyToEndpoint;
+    }
+
+    public ParticipantId getReplyToIdentifier() {
+        return replyToIdentifier;
+    }
+
+    public boolean getReplyToSender() {
+        return replyToSender;
     }
 
 }

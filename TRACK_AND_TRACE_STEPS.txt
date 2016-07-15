@@ -14,7 +14,8 @@ Sending:
 
 Handling Doc with reply-to:
   mark header in meta-info
-  if any reply-to set in meta-info (reply-to-endpoint overriders reply-to-sender):
+  if any reply-to set in meta-info (reply-to-endpoint overriders
+  reply-to-sender):
     - check if receiver exists
       * send response on error
     - validate document
@@ -35,7 +36,9 @@ Receiving replies:
   - add status to it.
 
 
-
 TestTool changes:
-  - 'sent-docs' page with status for each
-  - 'send-reply' button to incoming documents to mark as received if oxalis not set to autorespond
+  - 'sent-docs' page with status for each sent document
+  - 'send-reply' button to incoming documents to mark as received if
+    oxalis not set to autorespond (need to track whether is was
+    automatically sent too)
+
