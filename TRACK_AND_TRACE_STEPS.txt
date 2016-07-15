@@ -1,0 +1,41 @@
+
+Sending:
+
+- config opties:
+  oxalis.replyto.endpoint   (url)
+  oxalis.replyto.identifier (<schemeid>:<id>)
+  oxalis.replyto.sender     (true/false)
+
+- AS2 experimental headers:
+  X-Reply-To: <schemeid>:<id>
+  X-Reply-To-Endpoint: <URL>
+
+- mark sent document as 'not-replied-yet' (by transactionid?)
+
+Handling Doc with reply-to:
+  mark header in meta-info
+  if any reply-to set in meta-info (reply-to-endpoint overriders reply-to-sender):
+    - check if receiver exists
+      * send response on error
+    - validate document
+      * send response on error
+    - either send OK immediately (oxalis.reply.automatic=true)
+    - or send OK upon action (oxalis.reply.automatic=false)
+  last part needs state: document-not-replied yet. So first do auto-reply
+
+Sending Replies:
+  - Create MLR with status
+  - lookup endpoint if necessary;
+    * which endpoint type? new profile?
+    *
+
+Receiving replies:
+  - lookup original document
+    * send mdn error if not found
+  - add status to it.
+
+
+
+TestTool changes:
+  - 'sent-docs' page with status for each
+  - 'send-reply' button to incoming documents to mark as received if oxalis not set to autorespond
