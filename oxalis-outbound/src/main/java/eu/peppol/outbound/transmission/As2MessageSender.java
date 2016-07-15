@@ -93,6 +93,16 @@ class As2MessageSender implements MessageSender {
                         ParticipantId sender,
                         PeppolDocumentTypeId peppolDocumentTypeId,
                         SmpLookupManager.PeppolEndpointData peppolEndpointData,
+                        PeppolAs2SystemIdentifier as2SystemIdentifierOfSender
+                        ) {
+        return send(inputStream, recipient, sender, peppolDocumentTypeId, peppolEndpointData, as2SystemIdentifierOfSender, null, null, false);
+    }
+
+    TransmissionId send(InputStream inputStream,
+                        ParticipantId recipient,
+                        ParticipantId sender,
+                        PeppolDocumentTypeId peppolDocumentTypeId,
+                        SmpLookupManager.PeppolEndpointData peppolEndpointData,
                         PeppolAs2SystemIdentifier as2SystemIdentifierOfSender,
                         SmpLookupManager.PeppolEndpointData replyToEndpoint,
                         ParticipantId replyToIdentifier,
@@ -149,8 +159,8 @@ class As2MessageSender implements MessageSender {
                 httpPost.addHeader(As2Header.REPLY_TO_IDENTIFIER.getHttpHeaderName(), replyToIdentifier.toString());
             } else {
                 // Use our own endpoint address
-                httpPost.addHeader(As2Header.REPLY_TO_IDENTIFIER.getHttpHeaderName(), as2SystemIdentifierOfSender.toString());
-            }
+                httpPost.addHeader(As2Header.REPLY_TO_IDENTIFIER.getHttpHeaderName(), sender.toString());
+                }
         }
 
         TransmissionId transmissionId = new TransmissionId();

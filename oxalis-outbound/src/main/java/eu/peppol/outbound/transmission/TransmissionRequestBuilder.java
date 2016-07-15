@@ -134,8 +134,10 @@ public class TransmissionRequestBuilder {
         return this;
     }
 
-    public TransmissionRequestBuilder replyToEndpoint(SmpLookupManager.PeppolEndpointData endpoint) {
-        this.replyToEndpoint = endpoint;
+    public TransmissionRequestBuilder replyToEndpoint(URL url) {
+        this.replyToEndpoint = new SmpLookupManager.PeppolEndpointData(url, BusDoxProtocol.AS2, null);
+        // TODO: error if null?
+        //this.replyToEndpoint = endpoint;
         return this;
     }
 

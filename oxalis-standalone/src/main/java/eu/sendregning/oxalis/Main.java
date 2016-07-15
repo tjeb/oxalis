@@ -35,6 +35,9 @@ public class Main {
     private static OptionSpec<String> destinationSystemId;  // The AS2 destination system identifier
     private static OptionSpec<String> docType;              // The PEPPOL document type (very long string)
     private static OptionSpec<String> profileType;          // The PEPPOL document profile
+    private static OptionSpec<Boolean> replyToSender;
+    private static OptionSpec<String> replyToIdentifier;
+    private static OptionSpec<String> replyToEndpoint;
 
     public static void main(String[] args) throws Exception {
 
@@ -133,6 +136,20 @@ public class Main {
                 }
             }
 
+            // Set reply-to headers
+            if (optionSet.has(replyToEndpoint)) {
+                // TODO catch URL error?
+                URL replyToEndpointURL = new URL(replyToEndpoint.value(optionSet));
+                requestBuilder.replyToEndpoint(replyToEndpointURL);
+                requestBuilder.replyToSender();
+            } else if (optionSet.has(replyToIdentifier)) {
+                ParticipantId replyToIdentifierId = new ParticipantId(replyToIdentifier.value(optionSet));
+                requestBuilder.replyToIdentifier(replyToIdentifierId);
+                requestBuilder.replyToSender();
+            } else if (optionSet.has(replyToSender)) {
+                requestBuilder.replyToSender();
+            }
+
             // Specifying the details completed, creates the transmission request
             TransmissionRequest transmissionRequest = requestBuilder.build();
 
@@ -175,6 +192,9 @@ public class Main {
         transmissionMethod = optionParser.accepts("m", "method of transmission: start or as2").requiredIf("u").withRequiredArg();
         destinationSystemId = optionParser.accepts("id","AS2 System identifier, obtained from CN attribute of X.509 certificate").withRequiredArg();
         trace = optionParser.accepts("t", "Trace/log/dump SOAP on transport level").withOptionalArg().ofType(Boolean.class).defaultsTo(false);
+        replyToSender = optionParser.accepts("z", "Add reply-to-sender header").withOptionalArg().ofType(Boolean.class);
+        replyToIdentifier = optionParser.accepts("x", "Add reply-to-identifier header, overrides default sender address").withOptionalArg().ofType(String.class);
+        replyToEndpoint = optionParser.accepts("c", "Add reply-to-Endpoint header, overrides default endpoint address").withOptionalArg().ofType(String.class);
         return optionParser;
     }
 

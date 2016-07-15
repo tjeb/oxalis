@@ -22,8 +22,11 @@ AS2SID=""
 FILE="./src/main/resources/BII04_T10_EHF-v1.5_invoice.xml"
 DOC_TYPE_OPTION=""
 RECEIVER="9908:810017902"
-SENDER="9908:810017902"
+SENDER="0106:jeltejansen"
 PROFILE="urn:www.cenbii.eu:profile:bii04:ver1.0"
+REPLYTO=""
+REPLYTOIDENTIFIER=""
+REPLYTOENDPOINT=""
 
 # Location of the executable program
 EXECUTABLE="target/oxalis-standalone.jar"
@@ -53,11 +56,17 @@ function usage() {
        in the SMP. Default URL is our own local host: $URL
 
     -t trace option, default is off
+
+    -z enable reply-to header
+
+    -x <identifier> set reply-to identifier
+
+    -c <endpoint URI> set reply-to-endpoint
 EOT
 
 }
 
-while getopts k:f:d:p:c:m:r:s:u:i:t opt
+while getopts k:f:d:p:c:m:r:s:u:i:tzx:c: opt
 do
     case $opt in
         d)  DOC_TYPE_OPTION="-d $OPTARG"
@@ -84,6 +93,12 @@ do
 			;;
 	    i)  AS2SID="$OPTARG"
 	        ;;
+	z)  REPLYTO="-z"
+	    ;;
+	x)  REPLYTOIDENTIFIER="-x $OPTARG"
+	    ;;
+	c)  REPLYTOENDPOINT="-c $OPTARG"
+	    ;;
         *)  echo "Sorry, unknown option $opt"
             usage
             exit 4
@@ -143,7 +158,10 @@ echo java -jar "$EXECUTABLE" \
     $URL_OPTION \
     $METHOD_OPTION \
     $AS2SID_OPTION \
-    $TRACE
+    $TRACE \
+    $REPLYTO \
+    $REPLYTOIDENTIFIER \
+    $REPLYTOENDPOINT
 
 # Executes the Oxalis outbound standalone Java program
 java -jar "$EXECUTABLE" \
@@ -154,7 +172,10 @@ java -jar "$EXECUTABLE" \
     $URL_OPTION \
     $METHOD_OPTION \
     $AS2SID_OPTION \
-    $TRACE
+    $TRACE \
+    $REPLYTO \
+    $REPLYTOIDENTIFIER \
+    $REPLYTOENDPOINT
 
 # Other usefull PPIDs:
 # ESV = 0088:7314455667781
