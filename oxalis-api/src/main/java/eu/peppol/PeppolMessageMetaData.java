@@ -45,6 +45,10 @@ public class PeppolMessageMetaData implements Serializable {
 
     private TransmissionId transmissionId;
 
+    private String replyToEndpoint;
+    private String replyToIdentifier;
+    private boolean replied;
+
     /**
      * Unique message identifier, which is held in the SBDH of an AS2 Message.
      * Do not confuse with the AS2 Message-ID which is supplied as headers in the HTTP protocol.
@@ -175,6 +179,30 @@ public class PeppolMessageMetaData implements Serializable {
         this.sendingAccessPointPrincipal = sendingAccessPointPrincipal;
     }
 
+    public String getReplyToEndpoint() {
+        return replyToEndpoint;
+    }
+
+    public void setReplyToEndpoint(String endpoint) {
+        replyToEndpoint = endpoint;
+    }
+
+    public String getReplyToIdentifier() {
+        return replyToIdentifier;
+    }
+
+    public void setReplyToIdentifier(String identifier) {
+        replyToIdentifier = identifier;
+    }
+
+    public boolean getReplied() {
+        return replied;
+    }
+
+    public void setReplied(boolean replied_) {
+        replied = replied_;
+    }
+
     @Override
     public String toString() {
         return new StringBuilder("PeppolMessageMetaData{")
@@ -192,6 +220,9 @@ public class PeppolMessageMetaData implements Serializable {
                 .append(", receivedTimeStamp=").append(receivedTimeStamp)
                 .append(", sendingAccessPointPrincipal=").append(sendingAccessPointPrincipal)
                 .append(", transmissionId='").append(transmissionId).append('\'')
+                .append(", replyToEndpoint='").append(replyToEndpoint).append('\'')
+                .append(", replyToIdentifier='").append(replyToIdentifier).append('\'')
+                .append(", replied=").append(replied)
                 .append('}')
                 .toString();
     }

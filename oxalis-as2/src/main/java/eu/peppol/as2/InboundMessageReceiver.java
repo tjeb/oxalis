@@ -179,6 +179,9 @@ public class InboundMessageReceiver {
         peppolMessageMetaData.setProfileTypeIdentifier(peppolStandardBusinessHeader.getProfileTypeIdentifier());
         peppolMessageMetaData.setSendingAccessPointId(new AccessPointIdentifier(as2Message.getAs2From().toString()));
         peppolMessageMetaData.setReceivingAccessPoint(new AccessPointIdentifier(as2Message.getAs2To().toString()));
+        peppolMessageMetaData.setReplyToEndpoint(as2Message.getReplyToEndpoint());
+        peppolMessageMetaData.setReplyToIdentifier(as2Message.getReplyToIdentifier());
+        peppolMessageMetaData.setReplied(false);
 
         // Retrieves the Common Name of the X500Principal, which is used to construct the AccessPointIdentifier for the senders access point
         X500Principal subjectX500Principal = SignedMimeMessageInspector.getSignersX509Certificate().getSubjectX500Principal();

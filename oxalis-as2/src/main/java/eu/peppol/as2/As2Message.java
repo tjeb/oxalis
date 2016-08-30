@@ -52,6 +52,8 @@ public class As2Message {
     private final String date;
     private final As2DispositionNotificationOptions dispositionNotificationOptions;
     private final String receiptDeliveryOption;
+    private final String replyToEndpoint;
+    private final String replyToIdentifier;
 
     public MimeMessage getMimeMessage() {
         return mimeMessage;
@@ -89,6 +91,14 @@ public class As2Message {
         return receiptDeliveryOption;
     }
 
+    public String getReplyToEndpoint() {
+        return replyToEndpoint;
+    }
+
+    public String getReplyToIdentifier() {
+        return replyToIdentifier;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("As2Message{");
@@ -101,6 +111,8 @@ public class As2Message {
         sb.append(", date='").append(date).append('\'');
         sb.append(", dispositionNotificationOptions=").append(dispositionNotificationOptions);
         sb.append(", receiptDeliveryOption='").append(receiptDeliveryOption).append('\'');
+        sb.append(", replyToEndpoint='").append(replyToEndpoint).append('\'');
+        sb.append(", replyToIdentifier='").append(replyToIdentifier).append('\'');
         sb.append('}');
         return sb.toString();
     }
@@ -116,6 +128,8 @@ public class As2Message {
         private String date;
         private As2DispositionNotificationOptions dispositionNotificationOptions;
         private String receiptDeliveryOption;
+        private String replyToEndpoint;
+        private String replyToIdentifier;
 
         public Builder(MimeMessage mimeMessage) {
             this();
@@ -240,6 +254,16 @@ public class As2Message {
             this.receiptDeliveryOption = receiptDeliveryOption;
             return this;
         }
+
+        public Builder replyToEndpoint(String endpoint) {
+            this.replyToEndpoint = endpoint;
+            return this;
+        }
+
+        public Builder replyToIdentifier(String identifier) {
+            this.replyToIdentifier = identifier;
+            return this;
+        }
     }
 
     private As2Message(Builder builder) {
@@ -252,6 +276,8 @@ public class As2Message {
         date = builder.date;
         dispositionNotificationOptions = builder.dispositionNotificationOptions;
         receiptDeliveryOption = builder.receiptDeliveryOption;
+        replyToEndpoint = builder.replyToEndpoint;
+        replyToIdentifier = builder.replyToIdentifier;
     }
 
 }

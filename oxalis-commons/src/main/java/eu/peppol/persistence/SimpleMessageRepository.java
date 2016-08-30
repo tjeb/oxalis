@@ -138,6 +138,9 @@ public class SimpleMessageRepository implements MessageRepository {
             sb.append(createJsonPair("recipientSchemeId", getSchemeId(headers.getRecipientId())));
             sb.append(createJsonPair("senderId", headers.getSenderId()));
             sb.append(createJsonPair("senderSchemeId", getSchemeId(headers.getSenderId())));
+            sb.append(createJsonPair("replyToEndpoint", headers.getReplyToEndpoint()));
+            sb.append(createJsonPair("replyToIdentifier", headers.getReplyToIdentifier()));
+            sb.append(createJsonPair("replied", headers.getReplied()));
             sb.append(createJsonPair("documentTypeIdentifier", headers.getDocumentTypeIdentifier()));
             sb.append(createJsonPair("profileTypeIdentifier", headers.getProfileTypeIdentifier()));
             sb.append(createJsonPair("sendingAccessPoint", headers.getSendingAccessPoint()));
