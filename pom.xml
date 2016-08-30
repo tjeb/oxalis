@@ -24,6 +24,7 @@
         <module>oxalis-outbound</module>
         <module>oxalis-commons</module>
         <module>oxalis-standalone</module>
+        <module>oxalis-sendreply</module>
         <module>oxalis-api</module>
         <module>oxalis-distribution</module>
         <module>oxalis-integration-test</module>
