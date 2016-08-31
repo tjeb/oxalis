@@ -46,7 +46,8 @@ public class Transmitter {
         BusDoxProtocol busDoxProtocol = transmissionRequest.getEndpointAddress().getBusDoxProtocol();
         MessageSender messageSender = messageSenderFactory.createMessageSender(busDoxProtocol);
         TransmissionResponse transmissionResponse = messageSender.send(transmissionRequest);
-        persistStatistics(transmissionRequest, transmissionResponse);
+        //Perhaps make this optional?
+        //persistStatistics(transmissionRequest, transmissionResponse);
         return transmissionResponse;
     }
 
