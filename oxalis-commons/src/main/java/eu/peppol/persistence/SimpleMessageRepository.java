@@ -150,7 +150,7 @@ public class SimpleMessageRepository implements MessageRepository {
             sb.append(createJsonPair("userAgentVersion", headers.getUserAgentVersion()));
             sb.append(createJsonPair("sendersTimeStamp", headers.getSendersTimeStamp()));
             sb.append(createJsonPair("receivedTimeStamp", headers.getReceivedTimeStamp()));
-            sb.append(createJsonPair("sendingAccessPointPrincipal", (headers.getSendingAccessPointPrincipal() == null) ? null : headers.getSendingAccessPointPrincipal().getName()));
+            sb.append(createJsonPair("sendingAccessPointPrincipal", (headers.getSendingAccessPointPrincipal() == null) ? null : headers.getSendingAccessPointPrincipal()));
             sb.append(createJsonPair("transmissionId", headers.getTransmissionId()));
             sb.append(createJsonPair("buildUser", OxalisVersion.getUser()));
             sb.append(createJsonPair("buildDescription", OxalisVersion.getBuildDescription()));

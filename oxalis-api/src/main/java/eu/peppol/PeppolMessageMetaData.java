@@ -2,9 +2,14 @@ package eu.peppol;
 
 import eu.peppol.identifier.*;
 
+import java.io.FileReader;
+import java.io.InputStream;
+import java.io.FileInputStream;
 import java.io.Serializable;
-import java.security.Principal;
+//import java.security.Principal;
 import java.util.Date;
+import java.text.SimpleDateFormat;
+import com.google.gson.*;
 
 /**
  * Holds meta data obtained during transmission of a PEPPOL message.
@@ -41,7 +46,7 @@ public class PeppolMessageMetaData implements Serializable {
     private Date sendersTimeStamp;
     private Date receivedTimeStamp = new Date();
 
-    private Principal sendingAccessPointPrincipal;
+    private String sendingAccessPointPrincipal;
 
     private TransmissionId transmissionId;
 
@@ -171,11 +176,11 @@ public class PeppolMessageMetaData implements Serializable {
         this.sendingAccessPoint = sendingAccessPoint;
     }
 
-    public Principal getSendingAccessPointPrincipal() {
+    public String getSendingAccessPointPrincipal() {
         return sendingAccessPointPrincipal;
     }
 
-    public void setSendingAccessPointPrincipal(Principal sendingAccessPointPrincipal) {
+    public void setSendingAccessPointPrincipal(String sendingAccessPointPrincipal) {
         this.sendingAccessPointPrincipal = sendingAccessPointPrincipal;
     }
 
@@ -225,5 +230,56 @@ public class PeppolMessageMetaData implements Serializable {
                 .append(", replied=").append(replied)
                 .append('}')
                 .toString();
+    }
+
+    public static PeppolMessageMetaData fromJson(String filename) throws Exception {
+        SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM d HH:mm:ss z yyyy");
+
+        // TODO more specific exception type ^
+        //Gson gson = new Gson();
+        //PeppolMessageMetaData peppolMessageMetaData = gson.fromJson(new FileReader(filename), PeppolMessageMetaData.class);
+        //return peppolMessageMetaData;
+        PeppolMessageMetaData peppolMessageMetaData = new PeppolMessageMetaData();
+        JsonParser parser = new JsonParser();
+        JsonObject jRoot = parser.parse(new FileReader(filename)).getAsJsonObject();
+        JsonObject jMetaData = jRoot.get("PeppolMessageMetaData").getAsJsonObject();
+        //System.out.println("[XX] Root: " + root.toString());
+        peppolMessageMetaData.setMessageId(jMetaData.get("messageId").getAsString());
+        peppolMessageMetaData.setRecipientId(new ParticipantId(jMetaData.get("recipientId").getAsString()));
+        peppolMessageMetaData.setSenderId(new ParticipantId(jMetaData.get("senderId").getAsString()));
+        peppolMessageMetaData.setDocumentTypeIdentifier(PeppolDocumentTypeId.valueOf(jMetaData.get("documentTypeIdentifier").getAsString()));
+        peppolMessageMetaData.setProfileTypeIdentifier(new PeppolProcessTypeId(jMetaData.get("profileTypeIdentifier").getAsString()));
+        peppolMessageMetaData.setSendingAccessPoint(new AccessPointIdentifier(jMetaData.get("sendingAccessPoint").getAsString()));
+        peppolMessageMetaData.setReceivingAccessPoint(new AccessPointIdentifier(jMetaData.get("receivingAccessPoint").getAsString()));
+        peppolMessageMetaData.setProtocol(BusDoxProtocol.instanceFrom(jMetaData.get("protocol").getAsString()));
+        peppolMessageMetaData.setUserAgent(jsonString(jMetaData, "userAgent"));
+        peppolMessageMetaData.setUserAgentVersion(jsonString(jMetaData, "userAgentVersion"));
+        if (jsonHas(jMetaData, "sendersTimeStamp")) {
+            peppolMessageMetaData.setSendersTimeStamp(formatter.parse(jMetaData.get("sendersTimeStamp").getAsString()));
+        }
+        if (jsonHas(jMetaData, "receivedTimeStamp")) {
+            peppolMessageMetaData.setReceivedTimeStamp(formatter.parse(jMetaData.get("receivedTimeStamp").getAsString()));
+        }
+        peppolMessageMetaData.setSendingAccessPointPrincipal(jsonString(jMetaData, "sendingAccessPointPrincipal"));
+        peppolMessageMetaData.setTransmissionId(new TransmissionId(jMetaData.get("transmissionId").getAsString()));
+        peppolMessageMetaData.setReplyToEndpoint(jsonString(jMetaData, "replyToEndpoint"));
+        peppolMessageMetaData.setReplyToIdentifier(jsonString(jMetaData, "replyToIdentifier"));
+        if (jsonHas(jMetaData, "replied")) {
+            peppolMessageMetaData.setReplied(jMetaData.get("replied").getAsBoolean());
+        }
+        //peppolMessageMetaData.set(jMetaData.get("").getAsString());
+        return peppolMessageMetaData;
+    }
+
+    private static String jsonString(JsonObject jo, String name) {
+        if (jsonHas(jo, name)) {
+            return jo.get(name).getAsString();
+        } else {
+            return null;
+        }
+    }
+
+    private static boolean jsonHas(JsonObject jo, String name) {
+        return jo.has(name) && ! jo.get(name).isJsonNull();
     }
 }

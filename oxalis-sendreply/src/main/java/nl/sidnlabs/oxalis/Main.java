@@ -18,11 +18,16 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import eu.peppol.PeppolMessageMetaData;
+
+
 /**
  * @author Jelte Jansen
  */
 public class Main {
 
+    private static OptionSpec<String> metaDataFile;
+    
     private static OptionSpec<String> documentIdentifier;
     private static OptionSpec<File> xmlDocument;
     private static OptionSpec<String> sender;
@@ -32,6 +37,31 @@ public class Main {
     private static OptionSpec<Boolean> trace;
 
     public static void main(String[] args) throws Exception {
+        OptionParser optionParser = getOptionParser();
+        
+        if (args.length == 0) {
+            System.out.println("");
+            optionParser.printHelpOn(System.out);
+            System.out.println("");
+            return;
+        }
+
+        OptionSet optionSet;
+
+        try {
+            optionSet = optionParser.parse(args);
+        } catch (Exception e) {
+            printErrorMessage(e.getMessage());
+            return;
+        }
+
+        String metaDataF = metaDataFile.value(optionSet);
+        System.out.println("Metadata file: " + metaDataF);
+        PeppolMessageMetaData metadata = PeppolMessageMetaData.fromJson(metaDataF);
+        System.out.println(metadata.toString());
+    }
+
+    public static void foo(String[] args) throws Exception {
 
         OptionParser optionParser = getOptionParser();
 
@@ -155,11 +185,14 @@ public class Main {
 
     static OptionParser getOptionParser() {
         OptionParser optionParser = new OptionParser();
+        metaDataFile = optionParser.accepts("m", "Metadata file of the document to reply to").withRequiredArg().ofType(String.class).required();
+        /*
         documentIdentifier = optionParser.accepts("i", "Document Identifier to reply to").withRequiredArg().ofType(String.class).required();
         xmlDocument = optionParser.accepts("f", "XML document file to be sent").withRequiredArg().ofType(File.class).required();
         sender = optionParser.accepts("s", "sender [e.g. 9908:976098897]").withRequiredArg();
         recipient = optionParser.accepts("r", "recipient [e.g. 9908:976098897]").withRequiredArg();
         destinationUrl = optionParser.accepts("u", "destination URL").withRequiredArg();
+        */
         return optionParser;
     }
 }

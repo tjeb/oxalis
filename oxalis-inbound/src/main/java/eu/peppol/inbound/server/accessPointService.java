@@ -235,7 +235,7 @@ public class accessPointService {
 
         // The Principal of the remote host is just a difficult word for their X.509 certificate Distinguished Name (DN)
         Principal remoteAccessPointPrincipal = fetchAccessPointPrincipal(webServiceContext);
-        peppolMessageMetaData.setSendingAccessPointPrincipal(remoteAccessPointPrincipal);
+        peppolMessageMetaData.setSendingAccessPointPrincipal(remoteAccessPointPrincipal.getName());
 
         // If the Principal contains CN= etc., saves it into meta data
         if (remoteAccessPointPrincipal instanceof X500Principal) {

@@ -54,7 +54,7 @@ public class MockWebServiceContextModule extends AbstractModule {
     PeppolMessageHeaderParser provideMessageHeaderParser() {
         PeppolMessageMetaData peppolMessageHeader = new PeppolMessageMetaData();
 
-        peppolMessageHeader.setSendingAccessPointPrincipal(createPrincipal());
+        peppolMessageHeader.setSendingAccessPointPrincipal(createPrincipal().getName());
         peppolMessageHeader.setDocumentTypeIdentifier(PeppolDocumentTypeIdAcronym.INVOICE.getDocumentTypeIdentifier());
         peppolMessageHeader.setMessageId(new MessageId(UUID.randomUUID().toString()));
         peppolMessageHeader.setTransmissionId(new TransmissionId());

@@ -112,7 +112,7 @@ public class SimpleMessageRepositoryTest {
         metadata.setUserAgentVersion("v9");
         metadata.setSendersTimeStamp(new Date());
         metadata.setReceivedTimeStamp(new Date());
-        metadata.setSendingAccessPointPrincipal(createPrincipal());
+        metadata.setSendingAccessPointPrincipal(createPrincipal().getName());
         metadata.setTransmissionId(new TransmissionId());
 
         SimpleMessageRepository simpleMessageRepository = new SimpleMessageRepository(GlobalConfiguration.getInstance());
