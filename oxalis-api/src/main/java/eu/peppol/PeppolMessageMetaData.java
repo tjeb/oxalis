@@ -224,9 +224,9 @@ public class PeppolMessageMetaData implements Serializable {
                 .append(", sendersTimeStamp=").append(sendersTimeStamp)
                 .append(", receivedTimeStamp=").append(receivedTimeStamp)
                 .append(", sendingAccessPointPrincipal=").append(sendingAccessPointPrincipal)
-                .append(", transmissionId='").append(transmissionId).append('\'')
-                .append(", replyToEndpoint='").append(replyToEndpoint).append('\'')
-                .append(", replyToIdentifier='").append(replyToIdentifier).append('\'')
+                .append(", transmissionId=").append(transmissionId)
+                .append(", replyToEndpoint=").append(replyToEndpoint)
+                .append(", replyToIdentifier=").append(replyToIdentifier)
                 .append(", replied=").append(replied)
                 .append('}')
                 .toString();
@@ -236,14 +236,10 @@ public class PeppolMessageMetaData implements Serializable {
         SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM d HH:mm:ss z yyyy");
 
         // TODO more specific exception type ^
-        //Gson gson = new Gson();
-        //PeppolMessageMetaData peppolMessageMetaData = gson.fromJson(new FileReader(filename), PeppolMessageMetaData.class);
-        //return peppolMessageMetaData;
         PeppolMessageMetaData peppolMessageMetaData = new PeppolMessageMetaData();
         JsonParser parser = new JsonParser();
         JsonObject jRoot = parser.parse(new FileReader(filename)).getAsJsonObject();
         JsonObject jMetaData = jRoot.get("PeppolMessageMetaData").getAsJsonObject();
-        //System.out.println("[XX] Root: " + root.toString());
         peppolMessageMetaData.setMessageId(jMetaData.get("messageId").getAsString());
         peppolMessageMetaData.setRecipientId(new ParticipantId(jMetaData.get("recipientId").getAsString()));
         peppolMessageMetaData.setSenderId(new ParticipantId(jMetaData.get("senderId").getAsString()));
