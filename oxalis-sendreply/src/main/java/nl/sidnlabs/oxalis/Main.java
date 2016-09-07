@@ -42,16 +42,16 @@ public class Main {
         String user = userId.value(optionSet);
         String recipient = recipientId.value(optionSet);
         String transmission = transmissionId.value(optionSet);
+        boolean force = optionSet.has("f");
         
         try {
-            ReplySender replySender = new ReplySender(response, user, recipient, transmission);
+            ReplySender replySender = new ReplySender(response, user, recipient, transmission, force);
 
             List<String> lines = responseLines.values(optionSet);
             //if (lines.size() > 0) {
             for (String line : lines) {
                 replySender.addResponseLine(line);
             }
-            
             
             replySender.sendReply();
         } catch (ReplySenderException rse) {
@@ -74,6 +74,7 @@ public class Main {
         userId = optionParser.accepts("u", "User ID").withRequiredArg().ofType(String.class).required();
         recipientId = optionParser.accepts("r", "Recipient ID; the party to send the response to (i.e. the sender of the business document)").withRequiredArg().ofType(String.class).required();
         responseLines = optionParser.accepts("a", "Additional response line (comma-separated <section>,<rcode>,[description],[statuscode])").withRequiredArg().ofType(String.class);
+        optionParser.accepts("f", "Force sending of document even if no reply-to has been set or the response was already sent");
         return optionParser;
     }
 

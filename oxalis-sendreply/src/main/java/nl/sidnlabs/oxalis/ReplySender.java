@@ -112,8 +112,11 @@ public class ReplySender {
         }
     }
     
-
     public ReplySender(String responseCode, String userId, String recipientId, String transmissionId) throws ReplySenderException {
+        this(responseCode, userId, recipientId, transmissionId, false);
+    }
+    
+    public ReplySender(String responseCode, String userId, String recipientId, String transmissionId, boolean forceSend) throws ReplySenderException {
         globalConfiguration = GlobalConfiguration.getInstance();
 
         this.responseCode = responseCode;
@@ -133,11 +136,12 @@ public class ReplySender {
 
         readMetaDataFile();
         readReceivedDocument();
-        if (metadata.getReplied()) {
+        if (metadata.getReplied() && !forceSend) {
             throw new ReplySenderException("This document was already replied to");
         }
         if (metadata.getReplyToEndpoint() == null &&
-            metadata.getReplyToIdentifier() == null) {
+            metadata.getReplyToIdentifier() == null &&
+            !forceSend) {
             throw new ReplySenderException("Document sender did not specify either reply-to-identifier or reply-to-endpoint");
         }
     }
