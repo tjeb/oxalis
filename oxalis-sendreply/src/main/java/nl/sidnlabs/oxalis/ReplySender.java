@@ -5,6 +5,7 @@ import eu.peppol.outbound.OxalisOutboundModule;
 import eu.peppol.outbound.transmission.*;
 import eu.peppol.PeppolMessageMetaData;
 import eu.peppol.util.GlobalConfiguration;
+import eu.peppol.persistence.SimpleMessageRepository;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -24,6 +25,8 @@ import javax.xml.transform.TransformerException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -130,7 +133,9 @@ public class ReplySender {
 
         readMetaDataFile();
         readReceivedDocument();
-
+        if (metadata.getReplied()) {
+            throw new ReplySenderException("This document was already replied to");
+        }
         if (metadata.getReplyToEndpoint() == null &&
             metadata.getReplyToIdentifier() == null) {
             throw new ReplySenderException("Document sender did not specify either reply-to-identifier or reply-to-endpoint");
@@ -228,6 +233,19 @@ public class ReplySender {
             throw new ReplySenderException(ioe);
         } catch (TransformerException tfe) {
             throw new ReplySenderException(tfe);
+        }
+    }
+
+    private void storeDocument(Document doc) throws ReplySenderException {
+        // store the document alongside the incoming, or in outgoing?
+        // hmz. alongside incoming for now
+        String storeDocumentFile = storePath + "/" + userId + "/" + recipientId + "/" + transmissionId + ".response";
+        File file = new File(storeDocumentFile);
+        try {
+            OutputStream fop = new FileOutputStream(file);
+            printDocument(doc, fop);
+        } catch (java.io.IOException ioe) {
+            throw new ReplySenderException(ioe);
         }
     }
 
@@ -339,6 +357,14 @@ public class ReplySender {
                     transmissionResponse.getTransmissionId()
                 );
 
+            // if we succeeded, store the document.
+            storeDocument(doc);
+
+            // Should we also update metadata?
+            metadata.setReplied(true);
+            SimpleMessageRepository smr = new SimpleMessageRepository(globalConfiguration);
+            String metaDataFile = storePath + "/" + userId + "/" + recipientId + "/" + transmissionId + ".txt";
+            smr.saveHeader(metadata, new File(metaDataFile));
         } catch (Exception e) {
             System.out.println("");
             System.out.println("Message failed : " + e.getMessage());

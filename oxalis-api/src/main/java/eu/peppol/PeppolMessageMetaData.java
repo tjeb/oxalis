@@ -278,4 +278,5 @@ public class PeppolMessageMetaData implements Serializable {
     private static boolean jsonHas(JsonObject jo, String name) {
         return jo.has(name) && ! jo.get(name).isJsonNull();
     }
+
 }

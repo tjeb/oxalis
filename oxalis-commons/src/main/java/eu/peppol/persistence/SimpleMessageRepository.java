@@ -115,7 +115,7 @@ public class SimpleMessageRepository implements MessageRepository {
     /**
      * Transforms and saves the headers as JSON
      */
-    void saveHeader(PeppolMessageMetaData peppolMessageMetaData, File messageHeaderFilePath) {
+    public void saveHeader(PeppolMessageMetaData peppolMessageMetaData, File messageHeaderFilePath) {
         try {
             FileOutputStream fos = new FileOutputStream(messageHeaderFilePath);
             PrintWriter pw = new PrintWriter(new OutputStreamWriter(fos, "UTF-8"));
