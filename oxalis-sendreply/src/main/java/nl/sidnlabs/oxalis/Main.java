@@ -14,9 +14,10 @@ public class Main {
     private static OptionSpec<String> responseLines;
     private static OptionSpec<String> responseCode;
 
-    private static OptionSpec<String> userId;
-    private static OptionSpec<String> recipientId;
-    private static OptionSpec<String> transmissionId;
+    //private static OptionSpec<String> userId;
+    //private static OptionSpec<String> recipientId;
+    //private static OptionSpec<String> transmissionId;
+    private static OptionSpec<String> documentPath;
     
     public static void main(String[] args) throws Exception {
 
@@ -39,13 +40,14 @@ public class Main {
         }
 
         String response = responseCode.value(optionSet);
-        String user = userId.value(optionSet);
-        String recipient = recipientId.value(optionSet);
-        String transmission = transmissionId.value(optionSet);
+        //String user = userId.value(optionSet);
+        //String recipient = recipientId.value(optionSet);
+        //String transmission = transmissionId.value(optionSet);
+        String xmlDocumentPath = documentPath.value(optionSet);
         boolean force = optionSet.has("f");
         
         try {
-            ReplySender replySender = new ReplySender(response, user, recipient, transmission, force);
+            ReplySender replySender = new ReplySender(response, xmlDocumentPath, force);
 
             List<String> lines = responseLines.values(optionSet);
             //if (lines.size() > 0) {
@@ -70,10 +72,11 @@ public class Main {
     static OptionParser getOptionParser() {
         OptionParser optionParser = new OptionParser();
         responseCode = optionParser.accepts("c", "Response code; AP for accepted, RE for rejected").withRequiredArg().ofType(String.class).required();
-        transmissionId = optionParser.accepts("t", "Transmission ID of the document to reply to").withRequiredArg().ofType(String.class).required();
-        userId = optionParser.accepts("u", "User ID").withRequiredArg().ofType(String.class).required();
-        recipientId = optionParser.accepts("r", "Recipient ID; the party to send the response to (i.e. the sender of the business document)").withRequiredArg().ofType(String.class).required();
+        //transmissionId = optionParser.accepts("t", "Transmission ID of the document to reply to").withRequiredArg().ofType(String.class).required();
+        //userId = optionParser.accepts("u", "User ID").withRequiredArg().ofType(String.class).required();
+        //recipientId = optionParser.accepts("r", "Recipient ID; the party to send the response to (i.e. the sender of the business document)").withRequiredArg().ofType(String.class).required();
         responseLines = optionParser.accepts("a", "Additional response line (comma-separated <section>,<rcode>,[description],[statuscode])").withRequiredArg().ofType(String.class);
+        documentPath = optionParser.accepts("d", "file path of the document to respond to (.xml, the .txt metadatafile will be derived from this").withRequiredArg().ofType(String.class);
         optionParser.accepts("f", "Force sending of document even if no reply-to has been set or the response was already sent");
         return optionParser;
     }

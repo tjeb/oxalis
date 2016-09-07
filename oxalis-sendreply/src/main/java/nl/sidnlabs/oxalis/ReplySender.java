@@ -40,10 +40,12 @@ import java.util.ArrayList;
 public class ReplySender {
     private String responseCode;
     private String xmlFile;
-    private String storePath;
-    private String userId;
-    private String recipientId;
-    private String transmissionId;
+    //private String userId;
+    //private String recipientId;
+    //private String transmissionId;
+    private String xmlDocumentPath;
+    private String metadataDocumentPath;
+    private String sentMlrDocumentPath;
     private ArrayList<ResponseLine> responseLines;
     private String apURL;
 
@@ -112,18 +114,24 @@ public class ReplySender {
         }
     }
     
-    public ReplySender(String responseCode, String userId, String recipientId, String transmissionId) throws ReplySenderException {
-        this(responseCode, userId, recipientId, transmissionId, false);
+    public ReplySender(String responseCode, String xmlDocumentPath) throws ReplySenderException {
+        this(responseCode, xmlDocumentPath, false);
     }
     
-    public ReplySender(String responseCode, String userId, String recipientId, String transmissionId, boolean forceSend) throws ReplySenderException {
+    public ReplySender(String responseCode, String xmlDocumentPath, boolean forceSend) throws ReplySenderException {
         globalConfiguration = GlobalConfiguration.getInstance();
 
         this.responseCode = responseCode;
-        this.userId = userId;
-        this.recipientId = recipientId;
-        this.transmissionId = transmissionId;
-        this.storePath = globalConfiguration.getInboundMessageStore();
+
+        this.xmlDocumentPath = xmlDocumentPath;
+        int ext_pos = xmlDocumentPath.lastIndexOf(".");
+        String basePath = xmlDocumentPath;
+        if (ext_pos > 0) {
+            basePath = xmlDocumentPath.substring(0, ext_pos);
+        }
+        this.metadataDocumentPath = basePath + ".txt";
+        this.sentMlrDocumentPath = basePath + ".response";
+
         this.responseLines = new ArrayList<ResponseLine>();
 
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -147,18 +155,16 @@ public class ReplySender {
     }
 
     private void readMetaDataFile() throws ReplySenderException {
-        String metaDataFile = storePath + "/" + userId + "/" + recipientId + "/" + transmissionId + ".txt";
         try {
-            metadata = PeppolMessageMetaData.fromJson(metaDataFile);
+            metadata = PeppolMessageMetaData.fromJson(metadataDocumentPath);
         } catch (Exception exc) {
             throw new ReplySenderException(exc);
         }
     }
 
     private void readReceivedDocument() throws ReplySenderException {
-        String receivedDocumentFile = storePath + "/" + userId + "/" + recipientId + "/" + transmissionId + ".xml";
         try {
-            receivedDocument = docBuilder.parse(receivedDocumentFile);
+            receivedDocument = docBuilder.parse(xmlDocumentPath);
         } catch (org.xml.sax.SAXException saxe) {
             throw new ReplySenderException(saxe);
         } catch (java.io.IOException ioe) {
@@ -172,18 +178,6 @@ public class ReplySender {
 
     public void setXmlFile(String xmlFilePath) {
         throw new RuntimeException("not necessary?");
-    }
-
-    public void setStorePath(String storePath) {
-        this.storePath = storePath;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public void setRecipientId(String recipientId) {
-        this.recipientId = recipientId;
     }
 
     public void addResponseLine(String line) throws ReplySenderException {
@@ -243,8 +237,7 @@ public class ReplySender {
     private void storeDocument(Document doc) throws ReplySenderException {
         // store the document alongside the incoming, or in outgoing?
         // hmz. alongside incoming for now
-        String storeDocumentFile = storePath + "/" + userId + "/" + recipientId + "/" + transmissionId + ".response";
-        File file = new File(storeDocumentFile);
+        File file = new File(sentMlrDocumentPath);
         try {
             OutputStream fop = new FileOutputStream(file);
             printDocument(doc, fop);
@@ -261,7 +254,7 @@ public class ReplySender {
         addElement(doc, root, cbc, "UBLVersionID", "2.1");
         addElement(doc, root, cbc, "CustomizationID", "urn:www.cenbii.eu:transaction:biitms071:ver2.0:extended:urn:www.peppol.eu:bis:peppol36a:ver1.0:extended:urn:www.simplerinvoicing.org:si:si-ubl:ver1.2.0");
         addElement(doc, root, cbc, "ProfileID", "urn:www.cenbii.eu:profile:bii36:ver2.0");
-        addElement(doc, root, cbc, "ID", transmissionId);
+        addElement(doc, root, cbc, "ID", metadata.getTransmissionId().toString());
         // is this today or date of invoice?
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date date = new Date();
@@ -367,8 +360,7 @@ public class ReplySender {
             // Should we also update metadata?
             metadata.setReplied(true);
             SimpleMessageRepository smr = new SimpleMessageRepository(globalConfiguration);
-            String metaDataFile = storePath + "/" + userId + "/" + recipientId + "/" + transmissionId + ".txt";
-            smr.saveHeader(metadata, new File(metaDataFile));
+            smr.saveHeader(metadata, new File(metadataDocumentPath));
         } catch (Exception e) {
             System.out.println("");
             System.out.println("Message failed : " + e.getMessage());
