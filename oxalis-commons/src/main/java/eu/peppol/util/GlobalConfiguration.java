@@ -191,6 +191,10 @@ public enum GlobalConfiguration {
         return INBOUND_MESSAGE_STORE.getValue(properties);
     }
 
+    public String getSentMessageStore() {
+        return SENT_MESSAGE_STORE.getValue(properties);
+    }
+
     public String getPersistenceClassPath() {
         return OXALIS_PERSISTENCE_CLASS_PATH.getValue(properties);
     }
@@ -285,6 +289,11 @@ public enum GlobalConfiguration {
          * Where to store inbound messages
          */
         INBOUND_MESSAGE_STORE("oxalis.inbound.message.store", true, System.getProperty("java.io.tmpdir") + "inbound"),
+
+        /**
+         * Where to store sent messages
+         */
+        SENT_MESSAGE_STORE("oxalis.sent.message.store", true, System.getProperty("java.io.tmpdir") + "sent"),
 
         /**
          * Class path entry where the persistence module is located.

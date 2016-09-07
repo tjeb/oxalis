@@ -158,4 +158,15 @@ public class PeppolStandardBusinessHeader {
         return profileTypeIdentifier;
     }
 
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("senderId: " + getSenderId().toString() + "\n");
+        sb.append("recipientId: " + getRecipientId().toString() + "\n");
+        sb.append("messageId: " + getMessageId().toString() + "\n");
+        sb.append("creationDate: " + getCreationDateAndTime().toString() + "\n");
+        sb.append("documentType: " + getDocumentTypeIdentifier().toString() + "\n");
+        sb.append("profileType: " + getProfileTypeIdentifier().toString() + "\n");
+        return sb.toString();
+    }
+
 }

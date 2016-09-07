@@ -7,6 +7,7 @@ import eu.peppol.identifier.PeppolDocumentTypeId;
 import eu.peppol.identifier.PeppolProcessTypeId;
 import eu.peppol.outbound.OxalisOutboundModule;
 import eu.peppol.outbound.transmission.*;
+import eu.peppol.util.GlobalConfiguration;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
@@ -15,6 +16,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -40,6 +43,8 @@ public class Main {
     private static OptionSpec<String> replyToEndpoint;
 
     public static void main(String[] args) throws Exception {
+
+        GlobalConfiguration globalConfiguration = globalConfiguration = GlobalConfiguration.getInstance();
 
         OptionParser optionParser = getOptionParser();
 
@@ -167,6 +172,17 @@ public class Main {
                     transmissionResponse.getTransmissionId()
                 );
 
+            // Store the outgoing message in the sent folder
+            // should this be in the outbound module itself?
+            String baseSentFilePath = globalConfiguration.getSentMessageStore() + "/" + transmissionResponse.getTransmissionId();
+            File outFile = new File(baseSentFilePath + ".xml");
+            Files.copy(xmlInvoice.toPath(), outFile.toPath());
+            PrintWriter writer = new PrintWriter(baseSentFilePath + ".txt", "UTF-8");
+            // perhaps store entire response?
+            writer.println(transmissionResponse.getStandardBusinessHeader().toString());
+            writer.close();
+            System.out.println("STORED DATA:");
+            System.out.println(transmissionResponse.toString());
         } catch (Exception e) {
             System.out.println("");
             System.out.println("Message failed : " + e.getMessage());
