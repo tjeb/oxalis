@@ -300,6 +300,14 @@ public class TransmissionRequestBuilder {
         return endpointAddress;
     }
 
+    public ParticipantId getSenderId() {
+        return effectiveStandardBusinessHeader.getSenderId();
+    }
+
+    public ParticipantId getRecipientId() {
+        return effectiveStandardBusinessHeader.getRecipientId();
+    }
+
     public boolean isOverrideAllowed() {
         return GlobalState.getInstance().isTransmissionBuilderOverride();
     }

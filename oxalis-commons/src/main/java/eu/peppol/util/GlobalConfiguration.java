@@ -293,7 +293,7 @@ public enum GlobalConfiguration {
         /**
          * Where to store sent messages
          */
-        SENT_MESSAGE_STORE("oxalis.sent.message.store", true, System.getProperty("java.io.tmpdir") + "sent"),
+        SENT_MESSAGE_STORE("oxalis.sent.message.store", true, null),
 
         /**
          * Class path entry where the persistence module is located.

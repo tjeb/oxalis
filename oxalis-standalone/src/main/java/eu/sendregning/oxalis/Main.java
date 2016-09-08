@@ -92,6 +92,9 @@ public class Main {
             requestBuilder.trace(trace.value(optionSet));
             System.out.println("Trace mode of RequestBuilder: " + requestBuilder.isTraceEnabled());
 
+            // If we store outgoing message we shall set this later
+            File sentMessageDirectory = null;
+
             // add receiver participant
             if (recipientId != null) {
                 requestBuilder.receiver(new ParticipantId(recipientId));
@@ -158,6 +161,12 @@ public class Main {
             // Specifying the details completed, creates the transmission request
             TransmissionRequest transmissionRequest = requestBuilder.build();
 
+            // If sent message store is configured, store sent message and info
+            String sentMessageStore = globalConfiguration.getSentMessageStore();
+            if (sentMessageStore != null) {
+                sentMessageDirectory = prepareMessageDirectory(sentMessageStore, requestBuilder.getSenderId(), requestBuilder.getRecipientId());
+            }
+
             // Fetches a transmitter ...
             Transmitter transmitter = oxalisOutboundModule.getTransmitter();
 
@@ -174,15 +183,17 @@ public class Main {
 
             // Store the outgoing message in the sent folder
             // should this be in the outbound module itself?
-            String baseSentFilePath = globalConfiguration.getSentMessageStore() + "/" + transmissionResponse.getTransmissionId();
-            File outFile = new File(baseSentFilePath + ".xml");
-            Files.copy(xmlInvoice.toPath(), outFile.toPath());
-            PrintWriter writer = new PrintWriter(baseSentFilePath + ".txt", "UTF-8");
-            // perhaps store entire response?
-            writer.println(transmissionResponse.getStandardBusinessHeader().toString());
-            writer.close();
-            System.out.println("STORED DATA:");
-            System.out.println(transmissionResponse.toString());
+            if (sentMessageDirectory != null) {
+                File outFile = computeMessageFileName(transmissionResponse.getTransmissionId().toString(), sentMessageDirectory);
+                Files.copy(xmlInvoice.toPath(), outFile.toPath());
+                File headerFile = computeHeaderFileName(transmissionResponse.getTransmissionId().toString(), sentMessageDirectory);
+                PrintWriter writer = new PrintWriter(headerFile.toPath().toString(), "UTF-8");
+                // perhaps store entire response?
+                writer.println(transmissionResponse.getStandardBusinessHeader().toString());
+                writer.close();
+                System.out.println("STORED DATA:");
+                System.out.println(transmissionResponse.getStandardBusinessHeader().toString());
+            }
         } catch (Exception e) {
             System.out.println("");
             System.out.println("Message failed : " + e.getMessage());
@@ -234,4 +245,48 @@ public class Main {
         return password;
     }
 
+    //
+    // taken from SimpleMessageRepository (for now)
+    //
+    private static File prepareMessageDirectory(String sentMessageStore, ParticipantId sender, ParticipantId recipient) {
+        // Computes the full path of the directory in which message and routing data should be stored.
+        File messageDirectory = computeDirectoryNameForSentMessage(sentMessageStore, sender, recipient);
+        if (!messageDirectory.exists()){
+            if (!messageDirectory.mkdirs()){
+                throw new IllegalStateException("Unable to create directory " + messageDirectory.toString());
+            }
+        }
+
+        if (!messageDirectory.isDirectory() || !messageDirectory.canWrite()) {
+            throw new IllegalStateException("Directory " + messageDirectory + " does not exist, or there is no access");
+        }
+        return messageDirectory;
+    }
+
+    /**
+     * Computes the directory name for inbound messages.
+     * <pre>
+     *     /basedir/{recipientId}/{senderId}
+     * </pre>
+     */
+    private static File computeDirectoryNameForSentMessage(String sentMessageStore, ParticipantId sender, ParticipantId recipient) {
+        String path = String.format("%s/%s",
+                normalizeFilename(sender.stringValue()),
+                normalizeFilename(recipient.stringValue())
+            );
+        return new File(sentMessageStore, path);
+    }
+
+    private static String normalizeFilename(String s) {
+        return s.replaceAll("[^a-zA-Z0-9.-]", "_"); // allow alpha-numericals, punctation and minus (all others will be replaced by underlines)
+    }
+
+    private static File computeMessageFileName(String messageId, File messageDirectory) {
+        String messageFileName = normalizeFilename(messageId) + ".xml";
+        return new File(messageDirectory, messageFileName);
+    }
+    private static File computeHeaderFileName(String messageId, File messageDirectory) {
+        String headerFileName = normalizeFilename(messageId) + ".txt";
+        return new File(messageDirectory, headerFileName);
+    }
 }
