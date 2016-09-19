@@ -401,9 +401,9 @@ public enum GlobalConfiguration {
         /**
          * Set the reply-to-endpoint header in outgoing messages
          */
-        REPLY_TO_ENDPOINT("oxalis.reply-to.endpoint", false, "", false),
+        REPLY_TO_ENDPOINT("oxalis.reply-to.endpoint", false, ""),
 
-        REPLY_TO_IDENTIFIER("oxalis.reply-to.identifier", false, "", false),
+        REPLY_TO_IDENTIFIER("oxalis.reply-to.identifier", false, ""),
 
         REPLY_TO_SENDER("oxalis.reply-to.sender", false, "false", false);
 

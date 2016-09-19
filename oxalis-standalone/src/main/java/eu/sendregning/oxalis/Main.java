@@ -144,17 +144,33 @@ public class Main {
                 }
             }
 
-            // Set reply-to headers
+            // Set reply-to headers; first from config, then override from arguments
+            if (globalConfiguration.getReplyToEndpoint() != null && !"".equals(globalConfiguration.getReplyToEndpoint())) {
+                URL replyToEndpointURL = new URL(globalConfiguration.getReplyToEndpoint());
+                requestBuilder.replyToEndpoint(replyToEndpointURL);
+                requestBuilder.replyToSender();
+            }
+            if (globalConfiguration.getReplyToIdentifier() != null  && !"".equals(globalConfiguration.getReplyToIdentifier())) {
+                ParticipantId replyToIdentifierId = new ParticipantId(globalConfiguration.getReplyToIdentifier());
+                requestBuilder.replyToIdentifier(replyToIdentifierId);
+                requestBuilder.replyToSender();
+            }
+            if (optionSet.has(replyToSender)) {
+                requestBuilder.replyToSender();
+            }
+
             if (optionSet.has(replyToEndpoint)) {
                 // TODO catch URL error?
                 URL replyToEndpointURL = new URL(replyToEndpoint.value(optionSet));
                 requestBuilder.replyToEndpoint(replyToEndpointURL);
                 requestBuilder.replyToSender();
-            } else if (optionSet.has(replyToIdentifier)) {
+            }
+            if (optionSet.has(replyToIdentifier)) {
                 ParticipantId replyToIdentifierId = new ParticipantId(replyToIdentifier.value(optionSet));
                 requestBuilder.replyToIdentifier(replyToIdentifierId);
                 requestBuilder.replyToSender();
-            } else if (optionSet.has(replyToSender)) {
+            }
+            if (optionSet.has(replyToSender)) {
                 requestBuilder.replyToSender();
             }
 
